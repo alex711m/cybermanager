@@ -1,0 +1,12 @@
+# kubernetes/cybermanager-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: cybermanager-service
+spec:
+  type: NodePort # Expose le service sur un port de la machine Minikube
+  ports:
+    - port: 5001 # Port interne au cluster
+      targetPort: 5001 # Port du conteneur
+  selector:
+    app: cybermanager # Cible les pods de votre application

@@ -1,0 +1,32 @@
+# kubernetes/mysql-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment # On décrit comment lancer nos conteneurs (pods)
+metadata:
+  name: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0 # L'image Docker à utiliser
+          env: # Variables d'environnement pour configurer MySQL
+            - name: MYSQL_ROOT_PASSWORD
+              value: "password" # Le mot de passe de la BDD
+            - name: MYSQL_DATABASE
+              value: "cybermanager_db" # Le nom de la base de données à créer
+          ports:
+            - containerPort: 3306
+          volumeMounts: # On attache le disque dur à l'intérieur du conteneur
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql # Le dossier des données de MySQL
+      volumes: # On spécifie quel disque dur utiliser
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: mysql-pvc # On utilise le PVC créé précédemment

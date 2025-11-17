@@ -1,0 +1,30 @@
+# kubernetes/cybermanager-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cybermanager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cybermanager
+  template:
+    metadata:
+      labels:
+        app: cybermanager
+    spec:
+      containers:
+        - name: cybermanager
+          # IMPORTANT : Utilisez votre image Docker Hub !
+          image: alexandre502/cybermanager-mono:1.2
+          ports:
+            - containerPort: 5001 # Le port que votre app Flask écoute
+          env: # On injecte les secrets de connexion à la BDD
+            - name: MYSQL_HOST
+              value: "mysql" # Le nom du service MySQL
+            - name: MYSQL_PASSWORD
+              value: "password" # Le mot de passe de la BDD
+            - name: MYSQL_DB_NAME
+              value: "cybermanager_db"
+            - name: MYSQL_USER
+              value: "root"
