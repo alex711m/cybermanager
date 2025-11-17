@@ -1,0 +1,23 @@
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# --- Environnements Virtuels (TRES IMPORTANT) ---
+venv/
+env/
+.env
+
+# --- Mac OS (Fichiers cachés du Finder) ---
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# --- IDE (VS Code, PyCharm...) ---
+.vscode/
+.idea/
+
+# --- Base de données locale (si sqlite) ---
+*.db
+*.sqlite3
