@@ -29,7 +29,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/Users/alex/Etudes/uqac/autumn_2025/cloud_computing/cloud-qu1-tp2/venv"
+set -gx VIRTUAL_ENV "/Users/alex/Github/uqac/autumn_2025/cloud/cybermanager/v1-monolith/venv"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH

@@ -8,7 +8,7 @@ alias deactivate 'test $?_OLD_VIRTUAL_PATH != 0 && setenv PATH "$_OLD_VIRTUAL_PA
 # Unset irrelevant variables.
 deactivate nondestructive
 
-setenv VIRTUAL_ENV "/Users/alex/Etudes/uqac/autumn_2025/cloud_computing/cloud-qu1-tp2/venv"
+setenv VIRTUAL_ENV "/Users/alex/Github/uqac/autumn_2025/cloud/cybermanager/v1-monolith/venv"
 
 set _OLD_VIRTUAL_PATH="$PATH"
 setenv PATH "$VIRTUAL_ENV/bin:$PATH"
