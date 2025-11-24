@@ -1,10 +1,10 @@
 # kubernetes/mysql-service.yaml
 apiVersion: v1
-kind: Service # On expose le déploiement sur le réseau du cluster
+kind: Service
 metadata:
-  name: mysql # C'est le nom d'hôte que votre application utilisera
+  name: mysql
 spec:
   ports:
     - port: 3306
   selector:
-    app: mysql # Cible les pods avec le label "app: mysql"
+    app: mysql

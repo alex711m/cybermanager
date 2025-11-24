@@ -1,20 +1,23 @@
-# Étape 1 : Utiliser une image Python officielle comme base
+# 1. On part d'une image Python légère officielle
 FROM python:3.9-slim
 
-# Étape 2 : Définir le répertoire de travail
+# 2. On définit le dossier de travail dans le conteneur
 WORKDIR /app
 
-# Étape 3 : Copier le fichier des dépendances et les installer
+# 3. On copie les dépendances et on installe
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Étape 4 : Copier le code de l'application
-# La ligne suivante copie le contenu du dossier local "app" directement dans "/app"
-COPY ./app/ .
+# 4. On installe Gunicorn (serveur de production) explicitement
+RUN pip install gunicorn
 
-# Étape 5 : Exposer le port
-EXPOSE 5001
+# 5. On copie tout le dossier 'app' local vers le dossier '/app/app' du conteneur
+COPY app/ ./app/
 
-# Étape 6 : Commande de lancement corrigée
-# On dit à Gunicorn de chercher l'objet "app" dans le fichier "__init__.py"
-CMD ["gunicorn", "--bind", "0.0.0.0:5001", "__init__:app"]
+# 6. On expose le port 5000 (Standard Flask)
+EXPOSE 5000
+
+# 7. La commande de démarrage
+# Explication : on lance gunicorn, on écoute partout (0.0.0.0) sur le port 5000
+# "app:create_app()" dit à gunicorn : "Va dans le dossier app, et lance la fonction create_app()"
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:create_app()"]

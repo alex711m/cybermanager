@@ -1,11 +1,11 @@
 # kubernetes/mysql-pvc.yaml
 apiVersion: v1
-kind: PersistentVolumeClaim # On demande du stockage persistant
+kind: PersistentVolumeClaim
 metadata:
   name: mysql-pvc
 spec:
   accessModes:
-    - ReadWriteOnce # Le volume peut être monté en lecture/écriture par un seul nœud
+    - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi # On demande 1 Gigaoctet de stockage
+      storage: 1Gi
