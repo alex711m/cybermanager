@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventory
+  template:
+    metadata:
+      labels:
+        app: inventory
+    spec:
+      containers:
+      - name: inventory
+        image: service-inventory:v1
+        imagePullPolicy: Never  # IMPORTANT : Utilise l'image locale de Minikube
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-service  # C'est ce nom que les autres utiliseront !
+spec:
+  selector:
+    app: inventory
+  ports:
+    - port: 5000 # Port interne au cluster
+      targetPort: 5000 # Port du conteneur Flask

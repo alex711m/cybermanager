@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Historique - CyberManager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h1>📜 Historique des Sessions</h1>
+        <a href="/" class="btn-back">⬅️ Retour au Dashboard</a>
+    </div>
+
+    <div class="summary-box">
+        <strong>Chiffre d'Affaires Total :</strong> {{ total_income }} €
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID Session</th>
+                <th>Machine</th>
+                <th>Début</th>
+                <th>Fin</th>
+                <th>Prix</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for session in sessions %}
+            <tr>
+                <td>#{{ session.id }}</td>
+                <td>{{ session.machine.name }}</td>
+                <td>{{ session.start_time.strftime('%d/%m %H:%M') }}</td>
+                <td>{{ session.end_time.strftime('%H:%M') }}</td>
+                <td><strong>{{ session.total_price }} €</strong></td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="text-align:center;">Aucune session terminée pour l'instant.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>
