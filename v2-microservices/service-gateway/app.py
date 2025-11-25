@@ -74,5 +74,28 @@ def reset():
     # Pour l'instant on redirige juste, à implémenter si besoin
     return redirect(url_for('index'))
 
+@app.route('/machines/add', methods=['POST'])
+def add_machine():
+    # Dans une vraie v2, il faudrait appeler l'API Inventory : requests.post(...)
+    flash("Fonctionnalité 'Ajout de PC' désactivée pour la démo Microservices.", "warning")
+    return redirect(url_for('index'))
+
+@app.route('/history')
+def history():
+    # Dans une vraie v2, il faudrait appeler l'API Billing pour avoir la liste des transactions
+    flash("L'historique est stocké dans le service Billing mais l'interface n'est pas encore reliée.", "info")
+    return redirect(url_for('index'))
+
+@app.route('/logout')
+def logout():
+    # Comme on utilise un MockUser, la déconnexion est simulée
+    flash("Déconnexion impossible : Vous êtes sur un compte de démonstration.", "info")
+    return redirect(url_for('index'))
+
+@app.route('/reset')
+def reset_db():
+    flash("La réinitialisation du parc est désactivée pour la sécurité de la démo.", "warning")
+    return redirect(url_for('index'))
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
