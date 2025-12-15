@@ -10,7 +10,6 @@
 
     <div class="top-bar">
         <h1>CyberManager <small>(Microservices)</small></h1>
-        
         <div class="user-info">
             <span>👤 <strong>{{ user.username }}</strong></span>
             <a href="/history" class="action-button btn-history">📜 Historique</a>
@@ -34,14 +33,19 @@
         <form action="/machines/add" method="POST">
             <button type="submit" class="action-button btn-blue">➕ Ajouter un PC</button>
         </form>
-        
         <a href="/reset" class="action-button btn-grey">🔄 Réinitialiser le Parc</a>
     </div>
 
     <div class="grid">
         {% for machine in machines %}
             <div class="pc-card {{ machine.status }}">
-                <h3>{{ machine.name }}</h3>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>{{ machine.name }}</h3>
+                    <form action="/machines/delete/{{ machine.id }}" method="POST" onsubmit="return confirm('Supprimer ce PC ?');">
+                        <button type="submit" style="background: none; border: none; cursor: pointer;">🗑️</button>
+                    </form>
+                </div>
                 
                 {% if machine.status == 'available' %}
                     <p style="color: #2ecc71; font-weight: bold;">🟢 Libre</p>
@@ -51,14 +55,14 @@
                 {% else %}
                     <p style="color: #e74c3c; font-weight: bold;">🔴 Occupé</p>
                     <form action="/session/stop/{{ machine.id }}" method="POST">
-                        <button type="submit" class="btn-red">⏹️ Arrêter & Payer</button>
+                        <button type="submit" class="btn-red">⏹️ Arrêter et Payer</button>
                     </form>
                 {% endif %}
             </div>
         {% else %}
             <div style="grid-column: 1 / -1; text-align: center; color: #7f8c8d; padding: 20px;">
                 <h2>Le parc est vide 😢</h2>
-                <p>Cliquez sur "Ajouter un PC" pour commencer votre cybercafé.</p>
+                <p>Cliquez sur "Ajouter un PC" pour commencer.</p>
             </div>
         {% endfor %}
     </div>

@@ -20,7 +20,7 @@ spec:
         - containerPort: 5000
         env:
         - name: INVENTORY_API_URL
-          value: "http://inventory-service:5000" # Magie K8s !
+          value: "http://inventory-service:5000"
 ---
 apiVersion: v1
 kind: Service
