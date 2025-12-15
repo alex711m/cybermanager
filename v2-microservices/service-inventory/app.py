@@ -99,5 +99,17 @@ def release_machine(id):
     db.session.commit()
     return jsonify({'message': f'{machine.name} is now available', 'status': 'available'})
 
+@app.route('/reset', methods=['POST'])
+def reset_inventory():
+    """Supprime TOUTES les machines de la base de données"""
+    try:
+        # Instruction SQL DELETE sans condition (tout supprimer)
+        num_rows_deleted = db.session.query(Machine).delete()
+        db.session.commit()
+        return jsonify({'message': f'Reset successful. {num_rows_deleted} machines deleted.'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

@@ -106,7 +106,20 @@ def logout():
 
 @app.route('/reset')
 def reset_db():
-    flash("Réinitialisation désactivée.", "warning")
+    try:
+        # On envoie l'ordre de nettoyage à l'Inventory
+        # Note : On utilise POST car c'est une action destructive
+        response = requests.post(f"{INVENTORY_API_URL}/reset")
+        
+        if response.status_code == 200:
+            flash("♻️ Le parc a été entièrement réinitialisé !", "success")
+        else:
+            flash("Erreur lors de la réinitialisation côté Inventory.", "error")
+            
+    except Exception as e:
+        flash(f"Impossible de contacter l'Inventory : {e}", "error")
+
+    # On recharge la page d'accueil
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
