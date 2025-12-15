@@ -30,14 +30,18 @@
             {% for session in sessions %}
             <tr>
                 <td>#{{ session.id }}</td>
-                <td>{{ session.machine.name }}</td>
+                <td>{{ session.machine_name }}</td> 
+                
                 <td>{{ session.start_time.strftime('%d/%m %H:%M') }}</td>
                 <td>{{ session.end_time.strftime('%H:%M') }}</td>
-                <td><strong>{{ session.total_price }} €</strong></td>
+                
+                <td style="color: #27ae60;"><strong>{{ session.total_price }} $</strong></td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="5" style="text-align:center;">Aucune session terminée pour l'instant.</td>
+                <td colspan="5" style="text-align:center; padding: 20px; color: #7f8c8d;">
+                    Aucune session terminée pour l'instant.
+                </td>
             </tr>
             {% endfor %}
         </tbody>

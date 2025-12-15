@@ -90,6 +90,32 @@ def stop_session(machine_id):
         'price': price, 
         'duration_hours': round(hours, 2)
     })
+    
+@app.route('/sessions/history', methods=['GET'])
+def get_history():
+    """Renvoie toutes les sessions terminées et le total"""
+    # On récupère les sessions qui ont une date de fin (donc payées)
+    # Triées par la plus récente en premier
+    sessions = Session.query.filter(Session.end_time != None).order_by(Session.end_time.desc()).all()
+    
+    # Calcul du chiffre d'affaires total
+    total_income = sum(s.total_price for s in sessions)
+    
+    session_list = []
+    for s in sessions:
+        session_list.append({
+            'id': s.id,
+            'machine_id': s.machine_id,
+            # On convertit les dates en chaînes de caractères pour le JSON
+            'start_time': s.start_time.isoformat(),
+            'end_time': s.end_time.isoformat(),
+            'total_price': s.total_price
+        })
+        
+    return jsonify({
+        'total_income': round(total_income, 2),
+        'sessions': session_list
+    })
 
 if __name__ == '__main__':
     # On lance sur le port 5000 interne

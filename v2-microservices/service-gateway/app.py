@@ -2,6 +2,7 @@ import os
 import requests
 import random
 from flask import Flask, render_template, redirect, url_for, request, flash
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'dev-key-gateway'
@@ -96,8 +97,40 @@ def delete_machine(machine_id):
 
 @app.route('/history')
 def history():
-    flash("L'historique est stocké dans le service Billing.", "info")
-    return redirect(url_for('index'))
+    try:
+        # 1. On interroge le Service Billing
+        response = requests.get(f"{BILLING_API_URL}/sessions/history")
+        
+        if response.status_code == 200:
+            data = response.json()
+            sessions = data.get('sessions', [])
+            total_income = data.get('total_income', 0)
+            
+            # 2. TRAITEMENT DES DONNÉES
+            # On doit reconvertir les chaînes de caractères en objets Date pour le HTML
+            for s in sessions:
+                # Conversion string ISO -> objet datetime
+                if s['start_time']:
+                    s['start_time'] = datetime.fromisoformat(s['start_time'])
+                if s['end_time']:
+                    s['end_time'] = datetime.fromisoformat(s['end_time'])
+                
+                # Astuce Microservices :
+                # Comme on a décidé que ID 17 = "PC-17", on recrée le nom ici
+                # (Ça évite de devoir interroger l'Inventory pour chaque ligne)
+                s['machine_name'] = f"PC-{s['machine_id']}"
+
+        else:
+            flash("Erreur lors de la récupération de l'historique.", "error")
+            sessions = []
+            total_income = 0
+
+    except Exception as e:
+        flash(f"Service Billing indisponible : {e}", "error")
+        sessions = []
+        total_income = 0
+
+    return render_template('history.html', sessions=sessions, total_income=total_income, user=MockUser())
 
 @app.route('/logout')
 def logout():
@@ -108,7 +141,6 @@ def logout():
 def reset_db():
     try:
         # On envoie l'ordre de nettoyage à l'Inventory
-        # Note : On utilise POST car c'est une action destructive
         response = requests.post(f"{INVENTORY_API_URL}/reset")
         
         if response.status_code == 200:
