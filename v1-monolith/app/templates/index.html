@@ -30,14 +30,16 @@
       {% endif %}
     {% endwith %}
 
-    <div class="controls">
-        <form action="/machines/add" method="POST">
-            <button type="submit" class="action-button btn-blue">➕ Ajouter un PC</button>
-        </form>
-        
-        <a href="/reset" class="action-button btn-grey">🔄 Réinitialiser le Parc</a>
-    </div>
-
+    {% if user.is_admin %}
+        <div class="controls">
+            <form action="/machines/add" method="POST">
+                <button type="submit" class="action-button btn-blue">➕ Ajouter un PC</button>
+            </form>
+            
+            <a href="/reset" class="action-button btn-grey">🔄 Réinitialiser le Parc</a>
+        </div>
+    {% endif %}
+    
     <div class="grid">
         {% for machine in machines %}
             <div class="pc-card {{ machine.status }}">

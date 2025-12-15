@@ -20,7 +20,7 @@ spec:
         # 2. IMPORTANT : On interdit à K8s de chercher sur Internet
         imagePullPolicy: Never
         ports:
-        - containerPort: 5000
+        - containerPort: 5001
         env:
         # 3. ON UTILISE LA VARIABLE EXACTE QUE PYTHON ATTEND
         - name: DATABASE_URL

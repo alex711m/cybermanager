@@ -18,6 +18,6 @@ COPY app/ ./app/
 EXPOSE 5000
 
 # 7. La commande de démarrage
-# Explication : on lance gunicorn, on écoute partout (0.0.0.0) sur le port 5000
+# Explication : on lance gunicorn, on écoute partout (0.0.0.0) sur le port 5001
 # "app:create_app()" dit à gunicorn : "Va dans le dossier app, et lance la fonction create_app()"
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:create_app()"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5001", "app:create_app()"]

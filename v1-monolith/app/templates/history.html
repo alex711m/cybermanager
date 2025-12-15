@@ -20,6 +20,9 @@
         <thead>
             <tr>
                 <th>ID Session</th>
+                {% if current_user.is_admin %}
+                    <th>Utilisateur</th>
+                {% endif %}
                 <th>Machine</th>
                 <th>Début</th>
                 <th>Fin</th>
@@ -30,6 +33,11 @@
             {% for session in sessions %}
             <tr>
                 <td>#{{ session.id }}</td>
+                
+                {% if current_user.is_admin %}
+                    <td><strong>{{ session.user.username if session.user else 'Inconnu' }}</strong></td>
+                {% endif %}
+                
                 <td>{{ session.machine.name }}</td>
                 <td>{{ session.start_time.strftime('%d/%m %H:%M') }}</td>
                 <td>{{ session.end_time.strftime('%H:%M') }}</td>
@@ -37,7 +45,9 @@
             </tr>
             {% else %}
             <tr>
-                <td colspan="5" style="text-align:center;">Aucune session terminée pour l'instant.</td>
+                <td colspan="{{ '6' if current_user.is_admin else '5' }}" style="text-align:center;">
+                    Aucune session trouvée.
+                </td>
             </tr>
             {% endfor %}
         </tbody>

@@ -11,6 +11,7 @@
             <input type="text" name="username" placeholder="Identifiant" required>
             <input type="password" name="password" placeholder="Mot de passe" required>
             <button type="submit" class="btn-blue">Se connecter</button>
+            <p>Pas encore de compte ? <a href="{{ url_for('main.register') }}">Créer un compte</a></p>
         </form>
     </div>
 </body>

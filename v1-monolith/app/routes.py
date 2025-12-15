@@ -37,6 +37,33 @@ def login():
             
     return render_template('login.html')
 
+@main_bp.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        # Vérifier si l'utilisateur existe déjà
+        user = User.query.filter_by(username=username).first()
+        if user:
+            flash("Ce nom d'utilisateur est déjà pris.", 'error')
+            return redirect(url_for('main.register'))
+        
+        # Création du nouvel utilisateur (Admin = False par défaut)
+        hashed_pw = generate_password_hash(password, method='pbkdf2:sha256')
+        new_user = User(username=username, password=hashed_pw, is_admin=False)
+        
+        db.session.add(new_user)
+        db.session.commit()
+        
+        flash('Compte créé avec succès ! Veuillez vous connecter.', 'success')
+        return redirect(url_for('main.login'))
+
+    return render_template('register.html')
+
 @main_bp.route('/logout')
 @login_required
 def logout():
@@ -50,10 +77,10 @@ def init_admin():
     existing = User.query.filter_by(username='admin').first()
     if not existing:
         hashed_pw = generate_password_hash('admin123', method='pbkdf2:sha256')
-        new_admin = User(username='admin', password=hashed_pw)
+        new_admin = User(username='admin', password=hashed_pw, is_admin=True)
         db.session.add(new_admin)
         db.session.commit()
-        return "✅ Admin créé ! (Login: admin / Pass: admin123)"
+        return "✅ Admin créé !"
     return "⚠️ L'admin existe déjà."
 
 # ==========================================
@@ -69,6 +96,10 @@ def index():
 @main_bp.route('/machines/add', methods=['POST'])
 @login_required # Sécurité ajoutée
 def add_machine():
+    if not current_user.is_admin:
+        flash("Action non autorisée. Réservé aux administrateurs.", "error")
+        return redirect(url_for('main.index'))
+    
     count = Machine.query.count()
     new_machine = Machine(name=f"PC-{count + 1}", status="available")
     
@@ -80,6 +111,10 @@ def add_machine():
 @main_bp.route('/reset')
 @login_required # Sécurité ajoutée
 def reset_db():
+    if not current_user.is_admin:
+        flash("Action non autorisée. Réservé aux administrateurs.", "error")
+        return redirect(url_for('main.index'))
+    
     # Attention : On ne supprime pas les Users pour ne pas tuer ton compte admin !
     Machine.query.delete()
     Session.query.delete()
@@ -105,7 +140,7 @@ def start_session(machine_id):
     now_quebec = datetime.now(TZ_QUEBEC)
     start_time_db = now_quebec.replace(tzinfo=None)
     
-    new_session = Session(machine_id=machine.id, start_time=start_time_db)
+    new_session = Session(machine_id=machine.id, user_id=current_user.id, start_time=start_time_db)
     
     db.session.add(new_session)
     db.session.commit()
@@ -140,8 +175,17 @@ def stop_session(machine_id):
 def history():
     # Récupérer toutes les sessions terminées (celles qui ont une date de fin)
     # On les trie par date décroissante (du plus récent au plus vieux)
-    finished_sessions = Session.query.filter(Session.end_time != None).order_by(Session.start_time.desc()).all()
+    if current_user.is_admin:
+        # L'admin voit TOUT
+        finished_sessions = Session.query.filter(Session.end_time != None).order_by(Session.start_time.desc()).all()
     
+    else: 
+        # L'utilisateur normal ne voit que SES sessions
+        finished_sessions = Session.query.filter(
+            Session.end_time != None, 
+            Session.user_id == current_user.id
+        ).order_by(Session.start_time.desc()).all()
+        
     # Calcul du chiffre d'affaires total
     raw_income = sum(session.total_price for session in finished_sessions)
     total_income = round(raw_income, 2)
