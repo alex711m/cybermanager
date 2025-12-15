@@ -43,21 +43,36 @@ def get_machine(id):
 # --- NOUVEAU : Route pour AJOUTER un PC ---
 @app.route('/machines', methods=['POST'])
 def create_machine():
-    data = request.get_json()
-    new_name = data.get('name')
+    """Crée un PC avec la logique : Nom = 'PC-' + (Nombre total + 1)"""
     
-    if not new_name:
-        return jsonify({'error': 'Name is required'}), 400
-        
-    # Vérifier si le nom existe déjà
-    if Machine.query.filter_by(name=new_name).first():
-        return jsonify({'error': 'Machine already exists'}), 400
+    # 1. On compte combien de machines existent DANS LA BDD
+    count = Machine.query.count()
+    
+    # 2. On génère le nom
+    # Note : Si tu as supprimé des PC, il peut y avoir des conflits (ex: PC-3 existe déjà)
+    # On fait une petite boucle de sécurité pour trouver le prochain numéro libre
+    next_id = count + 1
+    new_name = f"PC-{next_id}"
+    
+    while Machine.query.filter_by(name=new_name).first():
+        next_id += 1
+        new_name = f"PC-{next_id}"
 
+    # 3. On enregistre
     new_machine = Machine(name=new_name, status='available')
-    db.session.add(new_machine)
-    db.session.commit()
     
-    return jsonify({'message': 'Machine created', 'id': new_machine.id}), 201
+    try:
+        db.session.add(new_machine)
+        db.session.commit()
+        
+        # 4. IMPORTANT : On renvoie le nom généré au Gateway
+        return jsonify({
+            'message': 'Machine created', 
+            'id': new_machine.id, 
+            'name': new_machine.name
+        }), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 # --- NOUVEAU : Route pour SUPPRIMER un PC ---
 @app.route('/machines/<int:id>', methods=['DELETE'])

@@ -34,7 +34,7 @@ def start_session_route(machine_id):
         if response.status_code == 200:
             flash(f"Session démarrée sur le PC {machine_id}", "success")
         else:
-            flash("Erreur : Impossible de démarrer (Machine occupée ?)", "error")
+            flash("Erreur : Impossible de démarrer (La machine est peut être occupée ?)", "error")
     except Exception as e:
         flash(f"Erreur de connexion Billing: {str(e)}", "error")
     return redirect(url_for('index'))
@@ -55,19 +55,26 @@ def stop_session_route(machine_id):
 # --- NOUVEAU : AJOUT DE PC ---
 @app.route('/machines/add', methods=['POST'])
 def add_machine():
-    # Génère un nom aléatoire simple pour l'exemple (ex: PC-42)
-    new_name = f"PC-{random.randint(10, 999)}"
+    # Sécurité (simulée avec MockUser comme dans ton code actuel)
+    # Dans un vrai cas, on vérifierait current_user.is_admin ici
     
     try:
-        # On envoie la demande à l'Inventory
-        response = requests.post(f"{INVENTORY_API_URL}/machines", json={'name': new_name})
+        # 1. On envoie une requête POST vide (pas de 'json={"name":...}')
+        # C'est l'Inventory qui va décider du nom
+        response = requests.post(f"{INVENTORY_API_URL}/machines")
         
         if response.status_code == 201:
-            flash(f"Nouveau PC ajouté : {new_name}", "success")
+            data = response.json()
+            # 2. On récupère le nom que l'Inventory a choisi
+            created_name = data.get('name') 
+            flash(f"Nouvelle machine ajoutée : {created_name}", "success")
         else:
-            flash("Erreur lors de la création du PC (Nom déjà pris ?)", "error")
+            # Gestion d'erreur propre
+            error_msg = response.json().get('error', 'Erreur inconnue')
+            flash(f"Erreur lors de la création : {error_msg}", "error")
+            
     except Exception as e:
-        flash(f"Impossible de contacter l'Inventory : {e}", "error")
+        flash(f"Impossible de contacter le service Inventory : {e}", "error")
 
     return redirect(url_for('index'))
 
